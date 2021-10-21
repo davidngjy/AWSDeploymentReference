@@ -1,0 +1,39 @@
+pr:
+- main
+
+stages:
+  - stage: build_publish_image_stage
+    displayName: Build and Publish Image
+    jobs:
+      - deployment: build_publish_image_deployment
+        displayName: Build and Publish Image Deployment
+        environment: AWS-Reference-Container-Registry
+        pool:
+          name: Azure Pipelines
+          vmImage: ubuntu-20.04
+
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                
+                - task: DockerCompose@0
+                  displayName: Build Service
+                  inputs:
+                    containerregistrytype: Container Registry
+                    dockerRegistryEndpoint: AWSContainerRegistryServiceConnection
+                    action: Build Services
+                    dockerComposeFile: Applications/docker-compose.yml
+                    dockerComposeFileArgs: |
+                      DOCKER_REGISTRY=282907128248.dkr.ecr.ap-southeast-2.amazonaws.com/container-repository-reference
+
+                - task: DockerCompose@0
+                  displayName: Push services
+                  inputs:
+                    containerregistrytype: Container Registry
+                    dockerRegistryEndpoint: AWSContainerRegistryServiceConnection
+                    action: Push services
+                    dockerComposeFile: Applications/docker-compose.yml
+                    dockerComposeFileArgs: |
+                      DOCKER_REGISTRY=282907128248.dkr.ecr.ap-southeast-2.amazonaws.com/container-repository-reference
