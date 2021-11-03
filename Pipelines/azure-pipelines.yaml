@@ -24,7 +24,6 @@ stages:
                     regionName: ap-southeast-2
                     scriptType: inline
                     inlineScript: 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 282907128248.dkr.ecr.ap-southeast-2.amazonaws.com'
-                    failOnStandardError: true
 
                 - task: DockerCompose@0
                   displayName: Build Service
